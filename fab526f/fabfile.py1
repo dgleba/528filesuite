@@ -1,0 +1,44 @@
+
+# sftp://192.168.88.60/srv/file/fab526f/fabfile.py
+
+# import getpass
+# from fabric import Connection, Config
+# from invocations.console import confirm
+from fabric import Connection
+from invoke import Exit
+from fabric import task
+from invoke import Responder
+
+# noworky
+
+# env.user = "albe"
+# env.password = "a"
+# sudo_pass = getpass.getpass("What's your sudo password?")
+# config = Config(overrides={'sudo': {'password': sudo_pass}})
+# c = Connection(host='192.168.88.64', user='albe', config=config)
+# c = Connection(host='192.168.88.64', user='albe')
+# c = Connection(host="albe@192.168.88.64")
+    # c.sudo('whoami', hide='stderr')
+
+
+# maybe works
+
+# c = Connection(host="192.168.88.64",user='albe', connect_kwargs={"password": "a"})
+# c = Connection(host="192.168.88.64",user="albe" , connect_kwargs={"password":"a", "sudo.password":"a"} )
+
+# fab tt --prompt-for-login-password --prompt-for-sudo-password
+c = Connection(host='192.168.88.64', user='albe')
+
+
+@task
+def tt(c):
+
+    sudopass = Responder(
+        pattern=r'\[sudo\] password for albe:',
+        response='a\n',
+    )
+
+    c.run('uname -a')
+    c.run('whoami')
+    c.run('sudo whoami', pty=True, watchers=[sudopass])
+
